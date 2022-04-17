@@ -1,3 +1,5 @@
+const User = require("../models/users");
+
 const getUsers = (req, res) => {
   res.status(200).json("Hello World! hey!");
 };
