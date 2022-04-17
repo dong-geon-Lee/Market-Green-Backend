@@ -37,4 +37,20 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
-module.exports = { getUsers, postUser, putUser, deleteUser };
+const loginUser = asyncHandler(async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    res.status(400).json({ message: "add email or password" });
+  }
+
+  const user = await User.findOne({ email: req.body.email });
+  console.log(user, "조회");
+  !user && res.status(400).json({ message: "Not found user email." });
+
+  if (user.password !== req.body.password) {
+    return res.status(400).json({ message: "Password not correct!" });
+  }
+
+  res.status(200).json(user);
+});
+
+module.exports = { getUsers, postUser, putUser, deleteUser, loginUser };
