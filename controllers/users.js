@@ -1,5 +1,6 @@
 const User = require("../models/users");
 const asyncHandler = require("express-async-handler");
+const CryptoJS = require("crypto-js");
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
@@ -7,11 +8,14 @@ const getUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
-const postUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password,
+    password: CryptoJS.AES.encrypt(
+      req.body.password,
+      process.env.PASS_SECRET
+    ).toString(),
   });
 
   const newUser = await user.save();
@@ -19,7 +23,7 @@ const postUser = asyncHandler(async (req, res) => {
   res.status(200).json(newUser);
 });
 
-const putUser = asyncHandler(async (req, res) => {
+const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
   !user && res.status(400).json({ message: "Not found user email." });
@@ -38,19 +42,29 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  if (!req.body.email || !req.body.password) {
-    res.status(400).json({ message: "add email or password" });
-  }
-
   const user = await User.findOne({ email: req.body.email });
-  console.log(user, "조회");
+
   !user && res.status(400).json({ message: "Not found user email." });
 
-  if (user.password !== req.body.password) {
-    return res.status(400).json({ message: "Password not correct!" });
+  const hashedPassword = CryptoJS.AES.decrypt(
+    user.password,
+    process.env.PASS_SECRET
+  );
+
+  const password = hashedPassword.toString(CryptoJS.enc.Utf8);
+
+  console.log(hashedPassword, "암호화 -> 복호화");
+  console.log(password, "인코딩 -> 문자열");
+
+  if (password !== req.body.password) {
+    return res.status(400).json("Wrong password!");
   }
+
+  // if (user.password !== req.body.password) {
+  //   return res.status(400).json({ message: "Password not correct!" });
+  // }
 
   res.status(200).json(user);
 });
 
-module.exports = { getUsers, postUser, putUser, deleteUser, loginUser };
+module.exports = { getUsers, registerUser, updateUser, deleteUser, loginUser };
