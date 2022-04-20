@@ -1,6 +1,7 @@
 const User = require("../models/users");
 const asyncHandler = require("express-async-handler");
 const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
 
 const registerUser = asyncHandler(async (req, res) => {
   const user = new User({
@@ -27,16 +28,26 @@ const loginUser = asyncHandler(async (req, res) => {
     process.env.PASS_SECRET
   );
 
-  const password = hashedPassword.toString(CryptoJS.enc.Utf8);
+  const originPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
   console.log(hashedPassword, "암호화 -> 복호화");
-  console.log(password, "인코딩 -> 문자열");
+  console.log(originPassword, "인코딩 -> 문자열");
 
-  if (password !== req.body.password) {
+  if (originPassword !== req.body.password) {
     return res.status(400).json("Wrong password!");
   }
 
-  res.status(200).json(user);
+  const accessToken = jwt.sign(
+    { id: user._id, isAdmin: user.isAdmin },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
+
+  console.log(accessToken.toString(), "token check");
+
+  const { password, ...others } = user._doc;
+
+  res.status(200).json({ ...others, accessToken });
 });
 
 const updateUser = asyncHandler(async (req, res) => {
@@ -47,11 +58,7 @@ const updateUser = asyncHandler(async (req, res) => {
     ).toString();
   }
 
-  const user = await User.findOne({ email: req.body.email });
-
-  !user && res.status(400).json({ message: "Not found user email." });
-
-  const newUser = await User.findOneAndUpdate(
+  const newUser = await User.findByIdAndUpdate(
     req.params.id,
     { $set: req.body },
     { new: true }
@@ -61,7 +68,7 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  await User.findOneAndDelete(req.params.id);
+  await User.findByIdAndDelete(req.params.id);
 
   res.status(200).json({ id: req.params.id });
 });
