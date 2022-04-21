@@ -43,14 +43,20 @@ const loginUser = asyncHandler(async (req, res) => {
     { expiresIn: "30d" }
   );
 
-  console.log(accessToken.toString(), "token check");
-
-  const { password, ...others } = user._doc;
+  const { ...others } = user._doc;
 
   res.status(200).json({ ...others, accessToken });
 });
 
 const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  const accessToken = jwt.sign(
+    { id: user.id, isAdmin: user.isAdmin },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
+
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
@@ -64,7 +70,9 @@ const updateUser = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  res.status(200).json(newUser);
+  const { _doc } = newUser;
+
+  res.status(200).json({ ..._doc, accessToken });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
@@ -79,4 +87,17 @@ const getUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
-module.exports = { getUsers, registerUser, updateUser, deleteUser, loginUser };
+const singleUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  console.log(user);
+  res.status(200).json(user);
+});
+
+module.exports = {
+  getUsers,
+  registerUser,
+  updateUser,
+  deleteUser,
+  loginUser,
+  singleUser,
+};

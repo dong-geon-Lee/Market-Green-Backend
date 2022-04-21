@@ -20,6 +20,7 @@ const verifyToken = (req, res, next) => {
 
 const tokenAuthorization = (req, res, next) => {
   verifyToken(req, res, () => {
+    console.log(req.user.id, "id찾기");
     if (req.user.id === req.params.id || req.user.isAdmin) {
       next();
     } else {
