@@ -12,5 +12,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/users", require("./routes/users"));
+app.use("/api/products", require("./routes/products"));
 
 app.listen(port, () => console.log(`Server Running ${port}`));
