@@ -12,9 +12,9 @@ const setProduct = asyncHandler(async (req, res) => {
     title: req.body.title,
     desc: req.body.desc,
     price: req.body.price,
-    rating: req.body.rating,
-    like: req.body.like,
-    img: req.body.img,
+    categories: req.body.categories,
+    img: req.file?.filename,
+    inStock: req.body.inStock,
   });
 
   const newProduct = await product.save();

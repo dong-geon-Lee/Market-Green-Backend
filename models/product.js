@@ -15,24 +15,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    rating: {
-      type: Number,
-      required: true,
-    },
-    like: {
-      type: Number,
-      required: true,
-    },
     categories: {
-      type: Array,
+      type: String,
     },
     img: {
       type: String,
-      required: true,
     },
     inStock: {
-      type: Boolean,
-      default: true,
+      type: Number,
     },
   },
   { timestamps: true }
