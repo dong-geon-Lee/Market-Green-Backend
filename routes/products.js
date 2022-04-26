@@ -30,8 +30,10 @@ let upload = multer({ storage, fileFilter });
 
 const router = require("express").Router();
 
-router.get("/", getProducts);
-router.route("/").post(upload.single("img"), setProduct);
-router.route("/:id").put(updateProduct).delete(deleteProduct);
+router.route("/").get(getProducts).post(upload.single("img"), setProduct);
+router
+  .route("/:id")
+  .put(upload.single("img"), updateProduct)
+  .delete(deleteProduct);
 
 module.exports = router;
