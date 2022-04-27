@@ -1,4 +1,3 @@
-const routers = require("express").Router();
 const {
   getUsers,
   registerUser,
@@ -6,6 +5,8 @@ const {
   deleteUser,
   loginUser,
 } = require("../controllers/users");
+
+const routers = require("express").Router();
 const { tokenAuthorization } = require("../middleware/verifyToken");
 
 // 나중에 Get 요청 admin 추가하기

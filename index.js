@@ -15,5 +15,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/users", require("./routes/users"));
 app.use("/api/products", require("./routes/products"));
+app.use("/api/carts", require("./routes/carts"));
 
 app.listen(port, () => console.log(`Server Running ${port}`));

@@ -5,7 +5,6 @@ const productSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      unique: true,
     },
     desc: {
       type: String,
@@ -14,6 +13,7 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      default: 0,
     },
     categories: {
       type: String,
@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
     },
     inStock: {
       type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
