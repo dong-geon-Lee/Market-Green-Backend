@@ -1,32 +1,29 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/users");
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.token;
+const verifyToken = async (req, res, next) => {
+  let token;
 
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) return res.status(401).json("Token is not valid!");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = user;
+      req.user = await User.findById(decoded.id).select("-password");
 
       next();
-    });
-  } else {
-    return res.status(401).json("You are not authenticated");
-  }
-};
-
-const tokenAuthorization = (req, res, next) => {
-  verifyToken(req, res, () => {
-    console.log(req.user.id, "id찾기");
-    if (req.user.id === req.params.id || req.user.isAdmin) {
-      next();
-    } else {
-      res.status(403).json("Your are not allowed to do that!");
+    } catch (error) {
+      res.status(401);
+      throw new Error("Not authorized, token failed");
     }
-  });
+  } else {
+    res.status(401);
+    throw new Error("Not authorized, not token");
+  }
 };
 
 const tokenAdmin = (req, res, next) => {
@@ -34,9 +31,9 @@ const tokenAdmin = (req, res, next) => {
     if (req.user.isAdmin) {
       next();
     } else {
-      res.status(403).json("Your are not allowed to do that!");
+      res.status(403).json("You are not admin user");
     }
   });
 };
 
-module.exports = { verifyToken, tokenAuthorization, tokenAdmin };
+module.exports = { verifyToken, tokenAdmin };

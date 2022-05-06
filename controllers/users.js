@@ -49,10 +49,11 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
-
+  console.log(req.user);
+  const user = await User.findById(req.user._id);
+  console.log(user);
   const accessToken = jwt.sign(
-    { id: user.id, isAdmin: user.isAdmin },
+    { id: user._id, isAdmin: user.isAdmin },
     process.env.JWT_SECRET,
     { expiresIn: "30d" }
   );

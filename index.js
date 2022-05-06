@@ -3,6 +3,7 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 const connectedDB = require("./config/database");
 const path = require("path");
+const { notFound, error } = require("./middleware/errorHandler");
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -16,5 +17,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/carts", require("./routes/carts"));
+
+app.use(notFound);
+app.use(error);
 
 app.listen(port, () => console.log(`Server Running ${port}`));
