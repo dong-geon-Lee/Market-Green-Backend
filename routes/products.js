@@ -3,15 +3,17 @@ const {
   setProduct,
   updateProduct,
   deleteProduct,
+  getProduct,
 } = require("../controllers/products");
 
-const upload = require("../middleware/multerUpload");
+const { tokenAdmin } = require("../middleware/verifyToken");
 const router = require("express").Router();
+const upload = require("../middleware/multerUpload");
 
-router.route("/").get(getProducts).post(upload.single("img"), setProduct);
-router
-  .route("/:id")
-  .put(upload.single("img"), updateProduct)
-  .delete(deleteProduct);
+router.get("/", getProducts);
+router.get("/:id", tokenAdmin, getProduct);
+router.post("/", tokenAdmin, upload.single("img"), setProduct);
+router.put("/:id", tokenAdmin, upload.single("img"), updateProduct);
+router.delete("/:id", tokenAdmin, upload.single("img"), deleteProduct);
 
 module.exports = router;

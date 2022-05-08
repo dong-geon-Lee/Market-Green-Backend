@@ -7,8 +7,14 @@ const getProducts = asyncHandler(async (req, res) => {
   res.status(200).json(products);
 });
 
+const getProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  res.status(200).json(product);
+});
+
 const setProduct = asyncHandler(async (req, res) => {
-  const product = new Product({
+  const product = await Product.create({
     title: req.body.title,
     desc: req.body.desc,
     price: req.body.price,
@@ -38,4 +44,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
-module.exports = { getProducts, setProduct, updateProduct, deleteProduct };
+module.exports = {
+  getProducts,
+  getProduct,
+  setProduct,
+  updateProduct,
+  deleteProduct,
+};
