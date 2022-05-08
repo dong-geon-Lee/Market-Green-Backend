@@ -14,11 +14,30 @@ const getOrder = asyncHandler(async (req, res) => {
 });
 
 const addOrder = asyncHandler(async (req, res) => {
-  const order = await Order.create(req.body);
+  const {
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  } = req.body;
 
-  const newOrder = await order.save();
+  const newOrder = new Order({
+    user: req.user._id,
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  });
 
-  res.status(200).json(newOrder);
+  const createOrder = await newOrder.save();
+
+  res.status(201).json(createOrder);
 });
 
 const updateOrdeer = asyncHandler(async (req, res) => {

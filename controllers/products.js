@@ -14,7 +14,7 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 const setProduct = asyncHandler(async (req, res) => {
-  const product = await Product.create({
+  const newProduct = await Product.create({
     title: req.body.title,
     desc: req.body.desc,
     price: req.body.price,
@@ -22,8 +22,6 @@ const setProduct = asyncHandler(async (req, res) => {
     img: req.file?.filename,
     inStock: req.body.inStock,
   });
-
-  const newProduct = await product.save();
 
   res.status(200).json(newProduct);
 });
