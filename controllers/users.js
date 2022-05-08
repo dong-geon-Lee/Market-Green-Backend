@@ -1,27 +1,48 @@
 const User = require("../models/users");
 const asyncHandler = require("express-async-handler");
 const CryptoJS = require("crypto-js");
-const jwt = require("jsonwebtoken");
+const generateToken = require("../utils/generateToken");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const user = new User({
-    name: req.body.name,
-    email: req.body.email,
+  const { name, email, password } = req.body;
+
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
+
+  const user = await User.create({
+    name,
+    email,
     password: CryptoJS.AES.encrypt(
-      req.body.password,
+      password,
       process.env.PASS_SECRET
     ).toString(),
   });
 
-  const newUser = await user.save();
-
-  res.status(200).json(newUser);
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid User Data");
+  }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
-  !user && res.status(400).json({ message: "Not found user email." });
+  if (!user) {
+    res.status(400);
+    throw new Error("Not found user email");
+  }
 
   const hashedPassword = CryptoJS.AES.decrypt(
     user.password,
@@ -30,33 +51,22 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const originPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
-  console.log(hashedPassword, "암호화 -> 복호화");
-  console.log(originPassword, "인코딩 -> 문자열");
-
   if (originPassword !== req.body.password) {
-    return res.status(400).json("Wrong password!");
+    res.status(400);
+    throw new Error("Wrong password");
   }
 
-  const accessToken = jwt.sign(
-    { id: user._id, isAdmin: user.isAdmin },
-    process.env.JWT_SECRET,
-    { expiresIn: "30d" }
-  );
-
-  const { ...others } = user._doc;
-
-  res.status(200).json({ ...others, accessToken });
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    accessToken: generateToken(user._id),
+  });
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  console.log(req.user);
-  const user = await User.findById(req.user._id);
-  console.log(user);
-  const accessToken = jwt.sign(
-    { id: user._id, isAdmin: user.isAdmin },
-    process.env.JWT_SECRET,
-    { expiresIn: "30d" }
-  );
+  const user = await User.findById(req.params.id);
 
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
@@ -73,7 +83,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const { _doc } = newUser;
 
-  res.status(200).json({ ..._doc, accessToken });
+  res.status(200).json({ ..._doc, accessToken: generateToken(user.id) });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
