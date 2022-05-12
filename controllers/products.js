@@ -70,12 +70,21 @@ const reviewProduct = asyncHandler(async (req, res) => {
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
       product.reviews.length;
 
-    await product.save();
-    res.status(201).json({ message: "Reviewed Added" });
+    const newProduct = await product.save();
+
+    res.status(201).json(newProduct);
   } else {
     res.status(404);
     throw new Error("Product not Found");
   }
+});
+
+const deleteReview = asyncHandler(async (req, res) => {
+  // await Product.findByIdAndDelete({
+  //   _id: req.params.id,
+  //   reviews: [{ _id: req.params.reviewId }],
+  // });
+  // res.status(200).json({ id: req.params.reviewId });
 });
 
 module.exports = {
@@ -85,4 +94,5 @@ module.exports = {
   reviewProduct,
   updateProduct,
   deleteProduct,
+  deleteReview,
 };
