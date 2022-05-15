@@ -4,7 +4,7 @@ const {
   updateProduct,
   deleteProduct,
   getProduct,
-  reviewProduct,
+  createReview,
   deleteReview,
 } = require("../controllers/products");
 
@@ -13,10 +13,10 @@ const router = require("express").Router();
 const upload = require("../middleware/multerUpload");
 
 router.get("/", getProducts);
+router.delete("/review/:id", deleteReview);
 router.get("/:id", protect, getProduct);
 router.post("/", tokenAdmin, upload.single("img"), setProduct);
-router.post("/:id/review", protect, reviewProduct);
-router.delete("/:id/review/:reviewId", protect, deleteReview);
+router.post("/:id/review", protect, createReview);
 router.put("/:id", tokenAdmin, upload.single("img"), updateProduct);
 router.delete("/:id", tokenAdmin, upload.single("img"), deleteProduct);
 

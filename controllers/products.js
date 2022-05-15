@@ -41,7 +41,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
-const reviewProduct = asyncHandler(async (req, res) => {
+const createReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
 
   const product = await Product.findById(req.params.id);
@@ -80,18 +80,24 @@ const reviewProduct = asyncHandler(async (req, res) => {
 });
 
 const deleteReview = asyncHandler(async (req, res) => {
-  // await Product.findByIdAndDelete({
-  //   _id: req.params.id,
-  //   reviews: [{ _id: req.params.reviewId }],
-  // });
-  // res.status(200).json({ id: req.params.reviewId });
+  const product = await Product.updateMany(
+    {
+      "reviews._id": { $in: req.params.id },
+    },
+    {
+      $pull: { reviews: { _id: { $in: req.params.id } } },
+      $inc: { numReviews: -1 },
+    }
+  );
+
+  res.status(200).json(product);
 });
 
 module.exports = {
   getProducts,
   getProduct,
   setProduct,
-  reviewProduct,
+  createReview,
   updateProduct,
   deleteProduct,
   deleteReview,
