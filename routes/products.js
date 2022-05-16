@@ -6,6 +6,7 @@ const {
   getProduct,
   createReview,
   deleteReview,
+  getReviews,
 } = require("../controllers/products");
 
 const { tokenAdmin, protect } = require("../middleware/verifyToken");
@@ -13,6 +14,7 @@ const router = require("express").Router();
 const upload = require("../middleware/multerUpload");
 
 router.get("/", getProducts);
+router.get("/review/:id", getReviews);
 router.delete("/review/:id", deleteReview);
 router.get("/:id", protect, getProduct);
 router.post("/", tokenAdmin, upload.single("img"), setProduct);

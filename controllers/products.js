@@ -70,9 +70,9 @@ const createReview = asyncHandler(async (req, res) => {
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
       product.reviews.length;
 
-    const newProduct = await product.save();
-
-    res.status(201).json(newProduct);
+    await product.save();
+    // const newProduct = res.status(201).json(newProduct);
+    res.status(201).json({ message: "Reviewed Added" });
   } else {
     res.status(404);
     throw new Error("Product not Found");
@@ -80,17 +80,27 @@ const createReview = asyncHandler(async (req, res) => {
 });
 
 const deleteReview = asyncHandler(async (req, res) => {
+  const numReviews = req.query.numReviews;
+  const rating = req.query.rating;
+
   const product = await Product.updateMany(
     {
       "reviews._id": { $in: req.params.id },
     },
     {
       $pull: { reviews: { _id: { $in: req.params.id } } },
-      $inc: { numReviews: -1 },
+      // $inc: { numReviews: -numReviews },
+      // $inc: { numReviews: -numReviews, rating: -rating },
     }
   );
 
   res.status(200).json(product);
+});
+
+const getReviews = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  res.status(200).json(product.reviews.rating);
 });
 
 module.exports = {
@@ -101,4 +111,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   deleteReview,
+  getReviews,
 };
