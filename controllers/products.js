@@ -1,5 +1,7 @@
 const Product = require("../models/product");
+
 const asyncHandler = require("express-async-handler");
+const fileSizeFormatter = require("../utils/imageSize");
 
 const getProducts = asyncHandler(async (req, res) => {
   const products = await Product.find();
@@ -14,11 +16,12 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 const setProduct = asyncHandler(async (req, res) => {
+  console.log(req.file, "잇니?");
   const newProduct = await Product.create({
     title: req.body.title,
     desc: req.body.desc,
     price: req.body.price,
-    img: req.file?.filename,
+    img: req.file.path,
     inStock: req.body.inStock,
   });
 
@@ -26,9 +29,19 @@ const setProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
+  // console.log(req.body, req.file.path, "server put");
+  if (!req.file) res.send("please img add");
   const newProduct = await Product.findByIdAndUpdate(
     req.params.id,
-    { $set: req.body },
+    {
+      $set: {
+        title: req.body.title,
+        desc: req.body.desc,
+        price: req.body.price,
+        img: req.file.path,
+        inStock: req.body.inStock,
+      },
+    },
     { new: true }
   );
 
