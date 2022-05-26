@@ -18,6 +18,10 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/orders", require("./routes/orders"));
 
+app.get("/api/paypal", (req, res) => {
+  res.json(process.env.PAYPAL_CLIENT_ID);
+});
+
 app.use(notFound);
 app.use(error);
 
