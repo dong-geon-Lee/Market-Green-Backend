@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Order = require("../models/order");
+const User = require("../models/users");
 
 const addOrder = asyncHandler(async (req, res) => {
   const {
@@ -40,7 +41,10 @@ const getOrder = asyncHandler(async (req, res) => {
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find();
+  const orders = await Order.find({ user: req.user._id }).populate(
+    "user",
+    "name"
+  );
 
   res.status(200).json(orders);
 });

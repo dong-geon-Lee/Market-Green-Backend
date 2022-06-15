@@ -84,7 +84,7 @@ const createReview = asyncHandler(async (req, res) => {
       product.reviews.length;
 
     await product.save();
-    // const newProduct = res.status(201).json(newProduct);
+
     res.status(201).json({ message: "Reviewed Added" });
   } else {
     res.status(404);
@@ -93,17 +93,12 @@ const createReview = asyncHandler(async (req, res) => {
 });
 
 const deleteReview = asyncHandler(async (req, res) => {
-  const numReviews = req.query.numReviews;
-  const rating = req.query.rating;
-
   const product = await Product.updateMany(
     {
       "reviews._id": { $in: req.params.id },
     },
     {
       $pull: { reviews: { _id: { $in: req.params.id } } },
-      // $inc: { numReviews: -numReviews },
-      // $inc: { numReviews: -numReviews, rating: -rating },
     }
   );
 
