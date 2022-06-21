@@ -22,7 +22,7 @@ app.get("/api/paypal", (req, res) => {
   res.json(process.env.PAYPAL_CLIENT_ID);
 });
 
-app.use(notFound);
 app.use(error);
+app.use(notFound);
 
 app.listen(port, () => console.log(`Server Running ${port}`));

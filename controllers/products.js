@@ -29,7 +29,6 @@ const setProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  // console.log(req.body, req.file.path, "server put");
   if (!req.file) res.send("please img add");
   const newProduct = await Product.findByIdAndUpdate(
     req.params.id,

@@ -7,10 +7,11 @@ const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const userExists = await User.findOne({ email });
+  console.log(userExists, "중복");
 
   if (userExists) {
     res.status(400);
-    throw new Error("User already exists");
+    throw new Error("이미 존재하는 유저입니다");
   }
 
   const user = await User.create({
@@ -32,7 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(400);
-    throw new Error("Invalid User Data");
+    throw new Error("유저 데이터가 유효하지 않습니다");
   }
 });
 
@@ -41,7 +42,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   if (!user) {
     res.status(400);
-    throw new Error("Not found user email");
+    throw new Error("비회원 또는 잘못된 E-mail입니다.");
   }
 
   const hashedPassword = CryptoJS.AES.decrypt(
@@ -52,8 +53,8 @@ const loginUser = asyncHandler(async (req, res) => {
   const originPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
   if (originPassword !== req.body.password) {
-    res.status(400);
-    throw new Error("Wrong password");
+    res.status(404);
+    throw new Error("잘못된 비밀번호입니다");
   }
 
   res.status(200).json({
@@ -68,6 +69,16 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
+  const users = await User.find();
+
+  const userIdList = users
+    .map((userList) => userList.email)
+    .find((e) => e === req.body.email);
+
+  if (userIdList) {
+    res.status(404);
+    throw new Error("이미 존재하는 유저입니다. 프로필 변경이 불가능합니다.");
+  }
 
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
