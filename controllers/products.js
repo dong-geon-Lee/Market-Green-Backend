@@ -29,7 +29,6 @@ const setProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  if (!req.file) res.send("please img add");
   const newProduct = await Product.findByIdAndUpdate(
     req.params.id,
     {
@@ -65,10 +64,9 @@ const createReview = asyncHandler(async (req, res) => {
 
     if (alreadyReviewed) {
       res.status(400);
-      throw new Error("Product already Reviewed");
+      throw new Error("Review를 이미 작성했습니다");
     }
 
-    console.log(req.user, "name");
     const review = {
       name: req.user.name,
       rating: Number(rating),
@@ -84,10 +82,10 @@ const createReview = asyncHandler(async (req, res) => {
 
     await product.save();
 
-    res.status(201).json({ message: "Reviewed Added" });
+    res.status(201).json(product);
   } else {
     res.status(404);
-    throw new Error("Product not Found");
+    throw new Error("제품을 찾을 수 없습니다");
   }
 });
 
