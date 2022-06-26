@@ -6,7 +6,7 @@ const { notFound, error } = require("./middleware/errorHandler");
 const path = require("path");
 
 const app = express();
-const port = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8000;
 
 connectedDB();
 
@@ -25,4 +25,4 @@ app.get("/api/paypal", (req, res) => {
 app.use(error);
 app.use(notFound);
 
-app.listen(5000, () => console.log(`Server Running ${port}`));
+app.listen(PORT, () => console.log(`Server Running ${port}`));
