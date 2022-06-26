@@ -8,8 +8,8 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 8000;
 
-connectedDB();
 dotenv.config();
+connectedDB();
 
 app.use(cors());
 app.use(express.json());
@@ -26,4 +26,6 @@ app.get("/api/paypal", (req, res) => {
 app.use(error);
 app.use(notFound);
 
-app.listen(port, () => console.log(`Server Running ${port}`));
+app.listen(process.env.PORT || 8000, () =>
+  console.log(`Server Running ${port}`)
+);
