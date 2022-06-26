@@ -1,5 +1,5 @@
 const express = require("express");
-const dotenv = require("dotenv");
+const dotenv = require("dotenv").config();
 const cors = require("cors");
 const connectedDB = require("./config/database");
 const { notFound, error } = require("./middleware/errorHandler");
@@ -8,7 +8,6 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 8000;
 
-dotenv.config();
 connectedDB();
 
 app.use(cors());
@@ -26,6 +25,4 @@ app.get("/api/paypal", (req, res) => {
 app.use(error);
 app.use(notFound);
 
-app.listen(process.env.PORT || 5000, () =>
-  console.log(`Server Running ${port}`)
-);
+app.listen(port, () => console.log(`Server Running ${port}`));
