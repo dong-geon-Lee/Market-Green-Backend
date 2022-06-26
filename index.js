@@ -25,4 +25,6 @@ app.get("/api/paypal", (req, res) => {
 app.use(error);
 app.use(notFound);
 
-app.listen(PORT, () => console.log(`Server Running ${port}`));
+app.listen(process.env.PORT || 8000, () =>
+  console.log(`Server Running ${PORT}`)
+);
