@@ -13,16 +13,11 @@ connectedDB();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/orders", require("./routes/orders"));
-
-app.use(express.static("build"));
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/build/index.html");
-});
 
 app.get("/api/paypal", (req, res) => {
   res.json(process.env.PAYPAL_CLIENT_ID);
