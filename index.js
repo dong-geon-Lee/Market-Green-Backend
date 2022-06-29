@@ -23,9 +23,6 @@ app.get("/api/paypal", (req, res) => {
   res.json(process.env.PAYPAL_CLIENT_ID);
 });
 
-app.use(error);
-app.use(notFound);
-
 //  -----Deployment-----
 
 const __dirname1 = path.resolve();
@@ -43,5 +40,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 //  -----Deployment-----
+
+app.use(error);
+app.use(notFound);
 
 app.listen(PORT, () => console.log(`Server Running ${PORT}`));
