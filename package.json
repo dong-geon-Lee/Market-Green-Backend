@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "heroku-postbuild": "../frontend && npm install --only=dev && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
