@@ -24,7 +24,7 @@ app.get("/api/paypal", (req, res) => {
 });
 
 app.use(error);
-// app.use(notFound);
+app.use(notFound);
 
 //  -----Deployment-----
 
