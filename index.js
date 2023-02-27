@@ -7,11 +7,12 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const corsOption = { credentials: true, origin: true };
 
-dotenv.config()
+dotenv.config();
 connectedDB();
 
-app.use(cors());
+app.use(cors(corsOption));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
