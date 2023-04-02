@@ -20,8 +20,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/orders", require("./routes/orders"));
-
-app.get("/api/paypal", (req, res) => {
+app.get("/api/paypal", (_, res) => {
   res.json(process.env.PAYPAL_CLIENT_ID);
 });
 
@@ -29,16 +28,15 @@ if (process.env.NODE_ENV === "production") {
   app.use("/uploads", express.static("uploads"));
   app.use(express.static(path.join(__dirname, "frontend", "build")));
 
-  app.get("*", (req, res) => {
+  app.get("*", (_, res) => {
     res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
   });
 } else {
-  app.get("/", (req, res) => {
+  app.get("/", (_, res) => {
     res.send("API is running..");
   });
 }
 
 app.use(error);
 app.use(notFound);
-
 app.listen(PORT, () => console.log(`Server Running ${PORT}`));
