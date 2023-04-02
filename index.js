@@ -25,23 +25,19 @@ app.get("/api/paypal", (req, res) => {
   res.json(process.env.PAYPAL_CLIENT_ID);
 });
 
-//  -----Deployment-----
-
-__dirname = path.resolve();
-
+// Serve static files from the React app
 if (process.env.NODE_ENV === "production") {
-  app.use("/uploads", express.static("uploads"));
+  app.use(express.static(path.join(__dirname, "frontend", "build")));
 
+  // Serve the index.html for all other routes
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
   });
 } else {
   app.get("/", (req, res) => {
     res.send("API is running..");
   });
 }
-
-//  -----Deployment-----
 
 app.use(error);
 app.use(notFound);
