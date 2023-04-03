@@ -26,10 +26,14 @@ app.get("/api/paypal", (_, res) => {
 
 if (process.env.NODE_ENV === "production") {
   app.use("/uploads", express.static("uploads"));
-  app.use(express.static(path.join(__dirname, "frontend", "build")));
+  app.use(
+    express.static(path.join(__dirname, "Market-Green-Frontend-main", "build"))
+  );
 
   app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
+    res.sendFile(
+      path.join(__dirname, "Market-Green-Frontend-main", "build", "index.html")
+    );
   });
 } else {
   app.get("/", (_, res) => {
